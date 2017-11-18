@@ -19,3 +19,17 @@
 - [ ] whether in a certain country
 
 
+## Models
+- [ ] Logistic Regression
+- [ ] SVM
+- [ ] GDA
+- [ ] Decision Tree
+- [ ] Random Forest
+- [ ] Gradient Boost Tree
+
+
+## Content
+- [ ] Features selection
+- [ ] Error analysis
+- [ ] Model combination
+- [ ] Deep Learning
