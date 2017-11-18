@@ -42,8 +42,8 @@ Logistic Regression|0.829539404964
 SVM(RBF)|0.5
 SVM(Linear)|TODO
 Decision Tree|0.648740361594
-Random Forest|0.915233858385
-Gradient Boost Tree|0.88609320803
+Random Forest|0.927422406274
+Gradient Boost Tree|0.898488698003
 GDA|TODO
 
 
