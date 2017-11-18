@@ -5,11 +5,11 @@
 - [ ] # of auctions
 - [ ] # of auctions won 
 - [ ] # of bids per auction
-- [ ] time response (min, max, mean, std)
+- [ ] time response (min, max, mean, std, median)
   - the time difference with previous bid
-- [ ] time series for user (min, max, mean, std, zeros)
+- [ ] time series for user (min, max, mean, std, median, zeros)
   - operations of a certain user
-- [ ] bid prices (min, max, mean, std)
+- [ ] bid prices (min, max, mean, std, median)
 - [ ] # of country
 - [ ] # of IP
 - [ ] # of URL
