@@ -44,7 +44,7 @@ SVM(Linear)|TODO
 Decision Tree|0.648740361594
 Random Forest|0.927422406274
 Gradient Boost Tree|0.898488698003
-GDA|TODO
+GDA| NA
 
 
 ## Content
