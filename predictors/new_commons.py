@@ -13,7 +13,7 @@ excludeBidders = [
     "f35082c6d72f1f1be3dd23f949db1f577t6wd",
 ]
 
-basedir = '..'
+basedir = '.'
 import os
 
 def filterFeatures(dfFeatures):
@@ -56,7 +56,7 @@ def printSubmission(classifier, X_train, y_train, name):
     prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
     pd.concat([common['bidder_id'], predictionDf], axis=1).to_csv(
-        "submissions/{}.csv".format(name),
+        os.path.join(basedir, "submissions/{}.csv".format(name)),
         index=False,
     )
 
@@ -88,6 +88,6 @@ def printSubmissionAverage(classifiers, X_train, y_train, name):
     prediction = [float(totPr[i][1]) / len(classifiers) for i in range(m)]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
     pd.concat([common['bidder_id'], predictionDf], axis=1).to_csv(
-        "submissions/{}.csv".format(name),
+        os.join.path(basedir, "submissions/{}.csv".format(name)),
         index=False,
     )
