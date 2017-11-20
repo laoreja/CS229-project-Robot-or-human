@@ -11,7 +11,6 @@
 - [x] # of IP
 - [x] # of URL
 - [x] # of device
-- [x] # of merchandise
 - [x] # of auctions for each merchandise category
 - [x] whether in a certain country
 - auctions_win.csv
@@ -24,6 +23,8 @@
   - operations of a certain user
 - price_feat_per_bidder.csv
 - [x] bid prices (min, max, mean, std, median)
+
+~~# of merchandise (All human and robots are 1, except one human is 2)~~
 
 
 
