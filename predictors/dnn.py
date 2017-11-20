@@ -12,39 +12,22 @@ name = "DNN"
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-
 def dnn_model_fn(features, labels, mode):
-    """Model function for CNN."""
-    # Input Layer
-    # Reshape X to 4-D tensor: [batch_size, width, height, channels]
-    # MNIST images are 28x28 pixels, and have one color channel
+
     input_layer = tf.reshape(features["x"], [-1, 29])
-
-    # Dense Layer
-    # Densely connected layer with 1024 neurons
-    # Input Tensor Shape: [batch_size, 7 * 7 * 64]
-    # Output Tensor Shape: [batch_size, 1024]
     dense1 = tf.layers.dense(inputs=input_layer, units=128, activation=tf.nn.relu)
-
     # Add dropout operation; 0.6 probability that element will be kept
     dropout1 = tf.layers.dropout(
             inputs=dense1, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
-    dense2 = tf.layers.dense(inputs=input_layer, units=512, activation=tf.nn.relu)
-
-    # Add dropout operation; 0.6 probability that element will be kept
+    dense2 = tf.layers.dense(inputs=dropout1, units=512, activation=tf.nn.relu)
     dropout2 = tf.layers.dropout(
             inputs=dense2, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
             
-    dense3 = tf.layers.dense(inputs=input_layer, units=256, activation=tf.nn.relu)
-
-    # Add dropout operation; 0.6 probability that element will be kept
+    dense3 = tf.layers.dense(inputs=dropout2, units=256, activation=tf.nn.relu)
     dropout3 = tf.layers.dropout(
             inputs=dense3, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
-    # Logits layer
-    # Input Tensor Shape: [batch_size, 1024]
-    # Output Tensor Shape: [batch_size, 10]
     logits = tf.layers.dense(inputs=dropout3, units=2)
 
     predictions = {

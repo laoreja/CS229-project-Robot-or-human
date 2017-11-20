@@ -13,6 +13,8 @@ excludeBidders = [
     "f35082c6d72f1f1be3dd23f949db1f577t6wd",
 ]
 
+basedir = '..'
+import os
 
 def filterFeatures(dfFeatures):
     lst = [x for x in list(dfFeatures) if len(x) > 2]
@@ -20,10 +22,10 @@ def filterFeatures(dfFeatures):
 
 
 def prepareTrainData():
-    dfFeatures = pd.read_csv("../features/new_all_feat.csv")
+    dfFeatures = pd.read_csv(os.path.join(basedir, "features/new_all_feat.csv"))
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
-    dfLabels = pd.read_csv("../data/train.csv").drop(
+    dfLabels = pd.read_csv(os.path.join(basedir, "data/train.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
     )
@@ -41,7 +43,7 @@ def evaluateClassifier(classifier, X_train, y_train, name):
             X_train,
             y_train,
             cv=4,
-            n_jobs=3,
+            n_jobs=1,
             scoring="roc_auc",
         ).mean()
     )
@@ -60,8 +62,8 @@ def printSubmission(classifier, X_train, y_train, name):
 
 
 def prepareTestFeatures():
-    dfFeatures = pd.read_csv("../features/new_all_feat.csv")
-    dfTest = pd.read_csv("../data/test.csv").drop(
+    dfFeatures = pd.read_csv(os.path.join(basedir, "features/new_all_feat.csv"))
+    dfTest = pd.read_csv(os.path.join(basedir, "data/test.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
     )

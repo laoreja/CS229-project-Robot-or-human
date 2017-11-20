@@ -1,11 +1,11 @@
-from commons import *
+from new_commons import *
 
 name = "GDA"
 
 
 # FIXME: Sigma is reported to be a singular matrix
-class GDAEstimator:
-
+class GDAEstimator():
+    
     def get_params(self, deep=False):
         return {}
 
@@ -27,8 +27,9 @@ class GDAEstimator:
             for j in range(X.shape[1]):
                 sigma[j] += cur[j] * cur
         sigma *= 1. / m
-        print sigma
+#        print sigma
         self.sigmaInverse = np.linalg.inv(sigma)
+        return self
 
     def predict(self, X):
         results = []
@@ -39,9 +40,20 @@ class GDAEstimator:
                 - 0.5 * (x - self.mu0).dot(self.sigmaInverse).dot(x - self.mu0)
             results.append(1 if logp1 > logp0 else 0)
         return results
+        
+    def predict_proba(self, X):
+        results = np.zeros([X.shape[0], 2])
+        for i, x in enumerate(X):
+            logp1 = np.log(self.phi) \
+                - 0.5 * (x - self.mu1).dot(self.sigmaInverse).dot(x - self.mu1)
+            logp0 = np.log(1 - self.phi) \
+                - 0.5 * (x - self.mu0).dot(self.sigmaInverse).dot(x - self.mu0)
+            results[i, 0] = logp0
+            results[i, 1] = logp1
+        return results
 
 
 gda = GDAEstimator()
 X_train, y_train = prepareTrainData()
-# evaluateClassifier(gda, X_train, y_train, name)
-printSubmission(gda, X_train, y_train, name)
+evaluateClassifier(gda, X_train, y_train, name)
+#printSubmission(gda, X_train, y_train, name)
