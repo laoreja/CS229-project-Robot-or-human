@@ -11,7 +11,7 @@
 - [x] # of IP
 - [x] # of URL
 - [x] # of device
-- [x] # of merchandise
+~~ - [x] # of merchandise (All human and robots are 1, except one human is 2) ~~
 - [x] # of auctions for each merchandise category
 - [x] whether in a certain country
 - auctions_win.csv
