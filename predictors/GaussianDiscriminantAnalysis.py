@@ -1,4 +1,5 @@
 from new_commons import *
+import math
 
 name = "GDA"
 
@@ -48,8 +49,12 @@ class GDAEstimator():
                 - 0.5 * (x - self.mu1).dot(self.sigmaInverse).dot(x - self.mu1)
             logp0 = np.log(1 - self.phi) \
                 - 0.5 * (x - self.mu0).dot(self.sigmaInverse).dot(x - self.mu0)
-            results[i, 0] = logp0
-            results[i, 1] = logp1
+            p0 = math.exp(logp0)
+            p1 = math.exp(logp1)
+            if p0 < 1e-5 and p1 < 1e-5:
+                p0 = p1 = 0.5
+            results[i, 0] = p0 / (p0 + p1)
+            results[i, 1] = p1 / (p0 + p1)
         return results
 
 

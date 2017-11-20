@@ -34,7 +34,7 @@
 - [x] Decision Tree
 - [x] Random Forest
 - [x] Gradient Boost Tree
-- [ ] GDA
+- [x] GDA
 
 ### Cross-Validation Result (K=4)
 Model  | Average AUC
@@ -45,7 +45,7 @@ SVM(Linear)|TODO
 Decision Tree|0.648740361594
 Random Forest|0.927422406274
 Gradient Boost Tree|0.898488698003
-GDA| NA
+GDA|0.746763663678
 
 
 ## Content
