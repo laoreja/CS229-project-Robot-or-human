@@ -6,14 +6,15 @@ from commons import *
 name = "LRGBTRF"
 lr = LogisticRegression()
 gbt = GradientBoostingClassifier(
-    n_estimators=600,
-    max_depth=15,
-    min_samples_leaf=2,
+    n_estimators=200,
+    max_depth=5,
+    max_features=40,
+    learning_rate=0.03,
 )
 rf = RandomForestClassifier(
-    n_estimators=600,
-    max_depth=15,
-    min_samples_leaf=2,
+    n_estimators=160,
+    max_depth=8,
+    max_features=35,
 )
 
 X_train, y_train = prepareTrainData()

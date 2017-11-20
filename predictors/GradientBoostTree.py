@@ -3,8 +3,8 @@ from commons import *
 
 name = "GBT"
 gbt = GradientBoostingClassifier(
-    n_estimators=600,
-    max_depth=15,
+    n_estimators=100,
+    max_depth=10,
     min_samples_leaf=2,
 )
 X_train, y_train = prepareTrainData()
