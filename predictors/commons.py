@@ -24,8 +24,8 @@ def prepareTrainData():
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
     dfLabels = pd.read_csv("./data/train.csv").drop(
-            ['address', 'payment_account'],
-            axis=1,
+        ['address', 'payment_account'],
+        axis=1,
     )
     common = dfFeatures.merge(dfLabels, on='bidder_id')
     X_train = np.array(common.drop(['bidder_id', 'outcome'], axis=1))
@@ -50,7 +50,8 @@ def evaluateClassifier(classifier, X_train, y_train, name):
 def printSubmission(classifier, X_train, y_train, name):
     classifier.fit(X_train, y_train)
     common, X_test = prepareTestFeatures()
-    prediction = classifier.predict(X_test)
+    prediction = classifier.predict_proba(X_test)
+    prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
     pd.concat([common['bidder_id'], predictionDf], axis=1).to_csv(
         "submissions/{}.csv".format(name),
@@ -64,10 +65,10 @@ def prepareTestFeatures():
         ['address', 'payment_account'],
         axis=1,
     )
-    common = dfFeatures.merge(
-        dfTest,
+    common = dfTest.merge(
+        dfFeatures,
         on='bidder_id',
-        how='right',
+        how='left',
     ).replace(np.nan, 0)
     X_test = np.array(common.drop(['bidder_id'], axis=1))
     return common, X_test
@@ -82,7 +83,7 @@ def printSubmissionAverage(classifiers, X_train, y_train, name):
     for clf in classifiers:
         pr = clf.predict_proba(X_test)
         totPr += pr
-    prediction = [1. if totPr[i][0] < totPr[i][1] else 0. for i in range(m)]
+    prediction = [float(totPr[i][1]) / len(classifiers) for i in range(m)]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
     pd.concat([common['bidder_id'], predictionDf], axis=1).to_csv(
         "submissions/{}.csv".format(name),
