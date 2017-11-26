@@ -49,7 +49,53 @@ GDA|0.746763663678
 
 
 ## Content
-- [ ] Features selection
+- [x] Feature selection
+- [ ] Feature selection (ablative?)
 - [ ] Error analysis
 - [ ] Model combination
 - [ ] Deep Learning
+
+### Feature Selection
+
+Using `new_all_feat.csv` for now.
+
+![alt text](./img/feature-selection-summary.eps "Feature Selection")
+
+LR:
+```
+Feature sequence: [
+  'mean_bids_per_auction', 'url_entropy', 'tdiff_min', 'tdiff_median', 
+  'response_median', 'response_mean', 'response_min', 'url_cnt', 
+  'price_min', 'response_std', 'country_cnt_mean_auc', 'tdiff_mean', 
+  'price_mean', 'auction_cnt', 'response_max', 'tdiff_std', 
+  'country_cnt', 'price_median', 'price_max', 'price_std', 
+  'tdiff_ip', 'ip_cnt', 'bids_cnt', 'ip_entropy', 
+  'tdiff_zeros', 'auctions_won_cnt', 'device_cnt', 'tdiff_max'
+]
+```
+RF:
+```
+Feature sequence: [
+  'mean_bids_per_auction', 'tdiff_median', 'device_cnt', 'price_min', 
+  'price_std', 'response_min', 'ip_entropy', 'country_cnt', 
+  'bids_cnt', 'tdiff_min', 'tdiff_ip', 'auction_cnt', 
+  'url_entropy', 'tdiff_mean', 'country_cnt_mean_auc', 'price_mean', 
+  'url_cnt', 'response_max', 'response_mean', 'ip_cnt', 
+  'tdiff_zeros', 'auctions_won_cnt', 'price_max', 'response_std', 
+  'tdiff_max', 'response_median', 'tdiff_std', 'price_median'
+]
+```
+
+GBT:
+```
+Feature sequence: [
+  'tdiff_mean', 'price_std', 'bids_cnt', 'tdiff_median', 
+  'response_std', 'tdiff_zeros', 'country_cnt', 'response_min', 
+  'tdiff_std', 'tdiff_ip', 'price_max', 'price_min', 
+  'tdiff_min', 'tdiff_max', 'response_max', 'ip_cnt', 
+  'response_median', 'auction_cnt', 'price_median', 'price_mean', 
+  'ip_entropy', 'response_mean', 'url_entropy', 'url_cnt', 
+  'country_cnt_mean_auc', 'auctions_won_cnt', 'device_cnt', 'mean_bids_per_auction'
+]
+```
+
