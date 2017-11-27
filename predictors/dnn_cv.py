@@ -8,7 +8,7 @@ import sys
 from sklearn.metrics import roc_auc_score
 from new_commons import *
 
-name = "DNN_CV"
+name = "DNN_CV_2"
 FEATURE_DIM = 668
 BASE_LEARNING_RATE = 0.01
 BATCH_SIZE = 100
@@ -18,6 +18,7 @@ MAX_EPOCH = 300
 do_train = True
 do_test = True
 K = 5
+LOG_DIR_base = 'dnn_cv_2_'
 
 def _variable_with_weight_decay(name, shape, stddev, wd, use_xavier=True):
     if use_xavier:
@@ -230,8 +231,8 @@ def main(unused_argv):
         robot = tmp[y_train == 1, :] # 98
         robot = robot[np.random.permutation(robot.shape[0]), :]    
         
-        tmp_train_split = np.vstack([human[:-131, :], robot[:-13,:]])
-        tmp_eval_split = np.vstack([human[-131:, :], robot[-13:,:]])
+        tmp_train_split = np.vstack([human[:-31, :], robot[:-3,:]])
+        tmp_eval_split = np.vstack([human[-31:, :], robot[-3:,:]])
         
         eval_data = tmp_eval_split[:, :-1]
         eval_labels = tmp_eval_split[:, -1].astype(np.int32)
@@ -247,11 +248,11 @@ def main(unused_argv):
             sub_train_split = np.vstack(CV_human_splits[:i] + CV_human_splits[i+1:] + (CV_robot_splits[:i] + CV_robot_splits[i+1:])*19)
             sub_hold_out_split = np.vstack([CV_human_splits[i], CV_robot_splits[i]])
             print('Train %dth CV' % i)
-            score += train(MAX_EPOCH, sub_train_split[:, :-1], sub_train_split[:, -1], sub_hold_out_split[:, :-1], sub_hold_out_split[:, -1], 'dnn_cv_'+str(i))
+            score += train(MAX_EPOCH, sub_train_split[:, :-1], sub_train_split[:, -1], sub_hold_out_split[:, :-1], sub_hold_out_split[:, -1], LOG_DIR_base+str(i))
         score = score / K
         print('Cross validation AUC: %f' % score)
     
-        eval_pred = predict(eval_data, 'dnn_cv_')
+        eval_pred = predict(eval_data, LOG_DIR_base)
         new_pred_val = np.argmax(eval_pred, 1)
         eval_accuracy = np.mean(new_pred_val == eval_labels)
         
@@ -264,7 +265,7 @@ def main(unused_argv):
         common, X_test = prepareTestFeatures()
         X_test = (X_test - mean) / (std + 0.001)
         
-        prediction = predict(X_test, 'dnn_cv_')
+        prediction = predict(X_test, LOG_DIR_base)
         print(type(prediction))
         print(prediction.shape)
         prediction = prediction - np.max(prediction, axis=1)[:, None]

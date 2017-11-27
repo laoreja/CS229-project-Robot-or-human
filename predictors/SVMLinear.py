@@ -1,5 +1,5 @@
 from sklearn import svm
-from commons import *
+from new_commons import *
 
 name = "SVMLinear"
 
@@ -9,4 +9,4 @@ svc = svm.SVC(
 )
 X_train, y_train = prepareTrainData()
 evaluateClassifier(svc, X_train, y_train, name)
-# printSubmission(svc, X_train, y_train, name)
+printSubmission(svc, X_train, y_train, name)

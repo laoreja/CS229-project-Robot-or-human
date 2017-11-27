@@ -37,23 +37,25 @@
 - [x] GDA
 
 ### Cross-Validation Result (K=4)
-Model  | Average AUC
---|--
-Logistic Regression|0.829539404964
-SVM(RBF)|0.5
-SVM(Linear)|TODO
-Decision Tree|0.648740361594
-Random Forest|0.927422406274
-Gradient Boost Tree|0.898488698003
-GDA|0.746763663678
+Model  | CV Average AUC (K=4) | Features used
+--|--|--
+Logistic Regression|0.829539404964|
+SVM(RBF)|0.887362701586|new_feat_for_dnn.csv
+SVM(Linear)|0.665470643041|new_feat_for_dnn.csv
+Decision Tree|0.648740361594|
+Random Forest|0.927422406274|
+Gradient Boost Tree|0.898488698003|
+GDA|0.746763663678|new_all_feat.csv
+DNN|0.860891|new_feat_for_dnn.csv
 
 
 ## Content
 - [x] Feature selection
 - [ ] Feature selection (ablative?)
-- [ ] Error analysis
-- [ ] Model combination
-- [ ] Deep Learning
+- [ ] Error analysis (Impossible?)
+- [ ] Model combination (trivial)
+- [ ] Deep Learning (optimization problem)
+- [ ] Cross Validation to tune (hyper)parameters
 
 ### Feature Selection
 
