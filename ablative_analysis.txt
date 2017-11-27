@@ -1,0 +1,105 @@
+Ablative Analysis for RF
+Full feature sets 	0.941165446989
+price_max price_mean price_median price_min price_std 	0.929175630731
+mean_bids_per_auction 	0.929976574852
+url_entropy 	0.931915856372
+tdiff_ip 	0.932387414171
+ip_entropy url_entropy 	0.932650246194
+tdiff_median 	0.932734313593
+url_cnt 	0.932764110991
+ip_entropy 	0.933911138591
+tdiff_min 	0.934138455979
+price_median 	0.934162423205
+tdiff_max 	0.934490996409
+price_std 	0.934847531847
+response_max 	0.935046102114
+tdiff_zeros 	0.935415466752
+price_min 	0.935484875435
+tdiff_mean 	0.9356444132
+device_cnt 	0.935905988842
+bids_cnt 	0.935907764715
+country_cnt 	0.935934953359
+response_mean 	0.936021482699
+price_mean 	0.936029515065
+ip_cnt 	0.936041502914
+country_cnt_mean_auc 	0.936062161201
+tdiff_max tdiff_mean tdiff_median tdiff_min tdiff_std tdiff_zeros 	0.936171915232
+tdiff_std 	0.937469931563
+auctions_won_cnt 	0.93779005737
+response_min 	0.938498054727
+price_max 	0.93878220852
+response_std 	0.938882227718
+response_median 	0.939109446289
+auction_cnt 	0.939197161427
+response_max response_mean response_median response_min response_std 	0.941606318042
+
+Ablative Analysis for LR
+Full feature sets 	0.804685633781
+price_max price_mean price_median price_min price_std 	0.354562226137
+bids_cnt 	0.792006386367
+url_entropy 	0.802969801689
+tdiff_mean 	0.804594169264
+tdiff_min 	0.806139545783
+price_mean 	0.80837665447
+price_max 	0.808585484709
+price_std 	0.809080357546
+price_min 	0.81273401432
+tdiff_ip 	0.812781406695
+price_median 	0.81284593102
+response_min 	0.812950315083
+country_cnt 	0.813201862267
+tdiff_std 	0.813463172517
+mean_bids_per_auction 	0.813651183539
+response_max 	0.814064913945
+device_cnt 	0.814902962235
+ip_cnt 	0.814956554637
+tdiff_median 	0.81509628676
+response_mean 	0.816275686633
+tdiff_max tdiff_mean tdiff_median tdiff_min tdiff_std tdiff_zeros 	0.816337935357
+ip_entropy 	0.817602983692
+auction_cnt 	0.818119833311
+response_max response_mean response_median response_min response_std 	0.818266567286
+url_cnt 	0.818957209649
+tdiff_zeros 	0.820431472196
+auctions_won_cnt 	0.821093463432
+country_cnt_mean_auc 	0.823556285856
+response_median 	0.825158450784
+response_std 	0.825902730722
+ip_entropy url_entropy 	0.828658230564
+tdiff_max 	0.829965436825
+
+Ablative Analysis for GBT
+Full feature sets 	0.916223215092
+tdiff_max tdiff_mean tdiff_median tdiff_min tdiff_std tdiff_zeros 	0.909837794191
+bids_cnt 	0.909962034716
+tdiff_zeros 	0.910423835095
+price_median 	0.911502453472
+tdiff_min 	0.9124072424
+price_max 	0.912547708587
+price_mean 	0.913474759453
+auctions_won_cnt 	0.913618630573
+response_max response_mean response_median response_min response_std 	0.915014672833
+url_entropy 	0.915074874644
+response_mean 	0.915145378778
+ip_cnt 	0.91530450716
+response_median 	0.91571331086
+tdiff_median 	0.916227670303
+response_max 	0.916279582825
+tdiff_std 	0.916548437006
+device_cnt 	0.916817901025
+tdiff_mean 	0.91887520328
+price_std 	0.919035669919
+tdiff_max 	0.91913937356
+price_max price_mean price_median price_min price_std 	0.920888179293
+price_min 	0.922101597439
+ip_entropy 	0.922530048674
+auction_cnt 	0.922799529634
+url_cnt 	0.922924684917
+country_cnt_mean_auc 	0.923538123391
+ip_entropy url_entropy 	0.924069617609
+response_min 	0.924691438542
+response_std 	0.924851306636
+country_cnt 	0.924919247188
+tdiff_ip 	0.924927615531
+mean_bids_per_auction 	0.926754559674
+

@@ -40,7 +40,10 @@ def prepareTrainData():
     common = dfFeatures.merge(dfLabels, on='bidder_id')
 #    print common.drop(['bidder_id', 'outcome'], axis=1).columns[598]
 #    print common.drop(['bidder_id', 'outcome'], axis=1).columns[660]
-    X_train = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
+    if feat_name == 'new_feat_for_dnn.csv':
+        X_train = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
+    else:
+        X_train = np.array(common.drop(['bidder_id', 'outcome'], axis=1))
     y_train = np.ravel(common[['outcome']])
     return X_train, y_train
 
@@ -83,7 +86,10 @@ def prepareTestFeatures():
         on='bidder_id',
         how='left',
     ).replace(np.nan, 0)
-    X_test = np.array(common.drop(['bidder_id', 'nan', 'vc'], axis=1))
+    if feat_name == 'new_feat_for_dnn.csv':
+        X_test = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
+    else:
+        X_test = np.array(common.drop(['bidder_id', 'outcome'], axis=1))
     return common, X_test
 
 

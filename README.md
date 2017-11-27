@@ -46,15 +46,14 @@ Decision Tree|0.648740361594|
 Random Forest|0.927422406274|
 Gradient Boost Tree|0.898488698003|
 GDA|0.746763663678|new_all_feat.csv
-DNN|0.860891|new_feat_for_dnn.csv
+DNN|0.861422|new_feat_for_dnn.csv
 
 
 ## Content
 - [x] Feature selection
-- [ ] Feature selection (ablative?)
-- [ ] Error analysis (Impossible?)
-- [ ] Model combination (trivial)
-- [ ] Deep Learning (optimization problem)
+- [x] Ablative analysis on features
+- [ ] Model combination
+- [ ] Deep Learning (optimization problems: data imbalance, overfitting)
 - [ ] Cross Validation to tune (hyper)parameters
 
 ### Feature Selection
