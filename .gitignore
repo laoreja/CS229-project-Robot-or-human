@@ -1,3 +1,9 @@
+submissions/*
+predictors/DNN_estimator.py
+predictors/dnn_log_0.778
+predictors/dnn_log
+predictors/dnn_cv_*
+
 data
 data/*
 # Byte-compiled / optimized / DLL files

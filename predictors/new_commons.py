@@ -5,6 +5,7 @@ from sklearn.cross_validation import StratifiedKFold
 from sklearn.metrics import roc_curve, auc
 from scipy import interp
 
+
 excludeBidders = [
     "74a35c4376559c911fdb5e9cfb78c5e4btqew",
     "7fab82fa5eaea6a44eb743bc4bf356b3tarle",
@@ -13,7 +14,10 @@ excludeBidders = [
     "f35082c6d72f1f1be3dd23f949db1f577t6wd",
 ]
 
-basedir = '.'
+basedir = '..'
+feature_subdir = 'features'
+data_subdir = 'data'
+feat_name = 'new_feat_for_dnn.csv'
 import os
 
 def printBasedir():
@@ -25,15 +29,18 @@ def filterFeatures(dfFeatures):
 
 
 def prepareTrainData():
-    dfFeatures = pd.read_csv(os.path.join(basedir, "features/new_all_feat.csv"))
+    dfFeatures = pd.read_csv(os.path.join(basedir, feature_subdir, feat_name))
+    dfFeatures.drop('Unnamed: 0', axis=1, inplace=True)
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
-    dfLabels = pd.read_csv(os.path.join(basedir, "data/train.csv")).drop(
+    dfLabels = pd.read_csv(os.path.join(basedir, data_subdir, "train.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
     )
     common = dfFeatures.merge(dfLabels, on='bidder_id')
-    X_train = np.array(common.drop(['bidder_id', 'outcome'], axis=1))
+#    print common.drop(['bidder_id', 'outcome'], axis=1).columns[598]
+#    print common.drop(['bidder_id', 'outcome'], axis=1).columns[660]
+    X_train = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
     y_train = np.ravel(common[['outcome']])
     return X_train, y_train
 
@@ -65,8 +72,9 @@ def printSubmission(classifier, X_train, y_train, name):
 
 
 def prepareTestFeatures():
-    dfFeatures = pd.read_csv(os.path.join(basedir, "features/new_all_feat.csv"))
-    dfTest = pd.read_csv(os.path.join(basedir, "data/test.csv")).drop(
+    dfFeatures = pd.read_csv(os.path.join(basedir, feature_subdir, feat_name))
+    dfFeatures.drop('Unnamed: 0', axis=1, inplace=True)
+    dfTest = pd.read_csv(os.path.join(basedir, data_subdir, "test.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
     )
@@ -75,7 +83,7 @@ def prepareTestFeatures():
         on='bidder_id',
         how='left',
     ).replace(np.nan, 0)
-    X_test = np.array(common.drop(['bidder_id'], axis=1))
+    X_test = np.array(common.drop(['bidder_id', 'nan', 'vc'], axis=1))
     return common, X_test
 
 
@@ -94,3 +102,5 @@ def printSubmissionAverage(classifiers, X_train, y_train, name):
         os.join.path(basedir, "submissions/{}.csv".format(name)),
         index=False,
     )
+    
+prepareTrainData()
