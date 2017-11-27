@@ -14,15 +14,20 @@ excludeBidders = [
 ]
 
 
+featureTableFilename = "./features/new_all_feat.csv"
+
+
 def filterFeatures(dfFeatures):
     lst = [x for x in list(dfFeatures) if len(x) > 2]
     return dfFeatures[lst]
 
 
 def prepareTrainData():
-    dfFeatures = pd.read_csv("./features/all_feat.csv")
+    dfFeatures = pd.read_csv(featureTableFilename)
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
+    if "Unnamed: 0" in list(dfFeatures):
+        dfFeatures = dfFeatures.drop(["Unnamed: 0"], axis=1)
     dfLabels = pd.read_csv("./data/train.csv").drop(
         ['address', 'payment_account'],
         axis=1,
@@ -60,7 +65,9 @@ def printSubmission(classifier, X_train, y_train, name):
 
 
 def prepareTestFeatures():
-    dfFeatures = pd.read_csv("./features/all_feat.csv")
+    dfFeatures = pd.read_csv(featureTableFilename)
+    if "Unnamed: 0" in list(dfFeatures):
+        dfFeatures = dfFeatures.drop(["Unnamed: 0"], axis=1)
     dfTest = pd.read_csv("./data/test.csv").drop(
         ['address', 'payment_account'],
         axis=1,

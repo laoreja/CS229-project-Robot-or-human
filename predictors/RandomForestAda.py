@@ -6,8 +6,7 @@ name = "RFAda"
 
 rf = RandomForestClassifier(
     n_estimators=160,
-    max_depth=8,
-    max_features=35,
+    max_depth=10,
 )
 rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
 

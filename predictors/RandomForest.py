@@ -1,13 +1,11 @@
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from new_commons import *
+from commons import *
 
 name = "RF"
 
 rf = RandomForestClassifier(
     n_estimators=160,
     max_depth=8,
-    max_features=10,
 )
 
 X_train, y_train = prepareTrainData()

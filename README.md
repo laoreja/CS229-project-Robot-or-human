@@ -39,13 +39,14 @@
 ### Cross-Validation Result (K=4)
 Model  | CV Average AUC (K=4) | Features used
 --|--|--
-Logistic Regression|0.829539404964|
+Logistic Regression|0.808161240231|`new_all_feat.csv`
 SVM(RBF)|0.887362701586|new_feat_for_dnn.csv
 SVM(Linear)|0.665470643041|new_feat_for_dnn.csv
-Decision Tree|0.648740361594|
-Random Forest|0.927422406274|
-Gradient Boost Tree|0.898488698003|
-GDA|0.746763663678|new_all_feat.csv
+Decision Tree|0.648740361594|`new_all_feat.csv`
+Random Forest|0.940371307088|`new_all_feat.csv`
+Random Forest Adaboost|0.937282646135|`new_all_feat.csv`
+Gradient Boost Tree|0.927422406274|`new_all_feat.csv`
+GDA|0.746763663678|`new_all_feat.csv`
 DNN|0.861422|new_feat_for_dnn.csv
 
 
