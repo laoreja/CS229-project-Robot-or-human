@@ -16,6 +16,9 @@ excludeBidders = [
 basedir = '.'
 import os
 
+def printBasedir():
+    print basedir
+    
 def filterFeatures(dfFeatures):
     lst = [x for x in list(dfFeatures) if len(x) > 2]
     return dfFeatures[lst]
