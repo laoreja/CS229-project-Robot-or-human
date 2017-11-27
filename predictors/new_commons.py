@@ -87,9 +87,9 @@ def prepareTestFeatures():
         how='left',
     ).replace(np.nan, 0)
     if feat_name == 'new_feat_for_dnn.csv':
-        X_test = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
+        X_test = np.array(common.drop(['bidder_id', 'nan', 'vc'], axis=1))
     else:
-        X_test = np.array(common.drop(['bidder_id', 'outcome'], axis=1))
+        X_test = np.array(common.drop(['bidder_id'], axis=1))
     return common, X_test
 
 
