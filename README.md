@@ -48,6 +48,8 @@ Random Forest Adaboost|0.937282646135|`new_all_feat.csv`
 Gradient Boost Tree|0.927422406274|`new_all_feat.csv`
 GDA|0.746763663678|`new_all_feat.csv`
 DNN|0.861422|new_feat_for_dnn.csv
+RFLR|0.925524029599|`new_all_feat.csv`
+GBTLR|0.906152747935|`new_all_feat.csv`
 
 
 ## Content

@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.cross_validation import cross_val_score
-from sklearn.cross_validation import StratifiedKFold
-from sklearn.metrics import roc_curve, auc
-from scipy import interp
+from sklearn.model_selection import cross_val_score
 
 excludeBidders = [
     "74a35c4376559c911fdb5e9cfb78c5e4btqew",
