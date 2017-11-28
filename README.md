@@ -60,7 +60,7 @@ SVM(RBF)|0.998220659875|0.909697711975|`new_all_feat.csv`
 SVM(Linear)|NA|NA|new_feat_for_dnn.csv
 Decision Tree|0.867897557747|0.801296381624|`new_all_feat.csv`
 Random Forest|0.999663661318|0.940295232529|`new_all_feat.csv`
-Random Forest Adaboost|TODO|TODO|`new_all_feat.csv`
+Random Forest Adaboost|1.0|0.945450916452|`new_all_feat.csv`
 Gradient Boost Tree|1.0|0.934069527262|`new_all_feat.csv`
 GDA|0.849059879135|0.84798183378|`new_all_feat.csv`
 DNN|NA|NA|new_feat_for_dnn.csv
@@ -72,7 +72,8 @@ GBTLR|0.937573913138|0.91208076084|`new_all_feat.csv`
 - [x] Ablative analysis on features
 - [x] Model combination
 - [ ] Deep Learning (optimization problems: data imbalance, overfitting)
-- [ ] Cross Validation to tune (hyper)parameters
+- [x] Cross Validation to tune (hyper)parameters
+
 
 ### Feature Selection
 
@@ -117,3 +118,22 @@ Feature sequence: [
   'country_cnt_mean_auc', 'auctions_won_cnt', 'device_cnt', 'mean_bids_per_auction'
 ]
 ```
+
+### CV to tune (hyper-)parameters
+
+After feature selection, we use CV to tune (hyper-)parameters for the random 
+forest model. (`./cvChooseHyperParams.py`) 
+The parameters are 
+- `n_estimators`,
+- `max_depth`, and
+- `max_features`.
+
+The best are `{'n_estimators': 315, 'max_features': 4, 'max_depth': 6}`.
+And in this setting, the result of random forest model is
+```
+  Training AUC = 0.995768642385
+  CV AUC (K=4) = 0.941281748317
+  Test AUC = 0.92586.
+```
+And without this tuning, the test AUC of RF (with feature selection)
+is 0.92298.
