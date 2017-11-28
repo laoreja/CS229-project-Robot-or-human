@@ -10,6 +10,8 @@ rf = RandomForestClassifier(
 )
 rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
 
-X_train, y_train = prepareTrainData()
+featureList=[]
+
+X_train, y_train = prepareTrainData(featureList)
 evaluateClassifier(rf, X_train, y_train, name)
-printSubmission(rf, X_train, y_train, name)
+printSubmission(rf, X_train, y_train, name, featureList)

@@ -1,10 +1,9 @@
-from new_commons import *
+from commons import *
 import math
 
 name = "GDA"
 
 
-# FIXME: Sigma is reported to be a singular matrix
 class GDAEstimator():
 
     def get_params(self, deep=False):
@@ -58,7 +57,11 @@ class GDAEstimator():
         return results
 
 
-gda = GDAEstimator()
-X_train, y_train = prepareTrainData()
-evaluateClassifier(gda, X_train, y_train, name)
-printSubmission(gda, X_train, y_train, name)
+if __name__ == "__main__":
+    gda = GDAEstimator()
+    featureList = [
+        'tdiff_min', 'response_min', 'tdiff_median'
+    ]
+    X_train, y_train = prepareTrainData(featureList)
+    evaluateClassifier(gda, X_train, y_train, name)
+    printSubmission(gda, X_train, y_train, name, featureList)

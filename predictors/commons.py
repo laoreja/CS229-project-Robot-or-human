@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import roc_auc_score
 
 excludeBidders = [
     "74a35c4376559c911fdb5e9cfb78c5e4btqew",
@@ -11,7 +12,8 @@ excludeBidders = [
 ]
 
 
-featureTableFilename = "./features/new_all_feat.csv"
+featureTableFilename = "./features/all_feat.csv"
+newFeatureTableFilename = "./features/new_all_feat.csv"
 
 
 def filterFeatures(dfFeatures):
@@ -19,12 +21,15 @@ def filterFeatures(dfFeatures):
     return dfFeatures[lst]
 
 
-def prepareTrainData():
-    dfFeatures = pd.read_csv(featureTableFilename)
+def prepareTrainData(featureList=[], newFeature=True):
+    filename = newFeatureTableFilename if newFeature else featureTableFilename
+    dfFeatures = pd.read_csv(filename)
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
     if "Unnamed: 0" in list(dfFeatures):
         dfFeatures = dfFeatures.drop(["Unnamed: 0"], axis=1)
+    if featureList != []:
+        dfFeatures = dfFeatures[featureList + ["bidder_id"]]
     dfLabels = pd.read_csv("./data/train.csv").drop(
         ['address', 'payment_account'],
         axis=1,
@@ -49,9 +54,11 @@ def evaluateClassifier(classifier, X_train, y_train, name):
     )
 
 
-def printSubmission(classifier, X_train, y_train, name):
+def printSubmission(classifier, X_train, y_train, name, featureList=[], newFeature=True):
     classifier.fit(X_train, y_train)
-    common, X_test = prepareTestFeatures()
+    y_hat = classifier.predict_proba(X_train)[:, 1]
+    print "[{}] Training AUC: {}".format(name, roc_auc_score(y_train, y_hat))
+    common, X_test = prepareTestFeatures(featureList, newFeature)
     prediction = classifier.predict_proba(X_test)
     prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
@@ -61,10 +68,13 @@ def printSubmission(classifier, X_train, y_train, name):
     )
 
 
-def prepareTestFeatures():
-    dfFeatures = pd.read_csv(featureTableFilename)
+def prepareTestFeatures(featureList, newFeature=True):
+    filename = newFeatureTableFilename if newFeature else featureTableFilename
+    dfFeatures = pd.read_csv(filename)
     if "Unnamed: 0" in list(dfFeatures):
         dfFeatures = dfFeatures.drop(["Unnamed: 0"], axis=1)
+    if featureList != []:
+        dfFeatures = dfFeatures[featureList + ["bidder_id"]]
     dfTest = pd.read_csv("./data/test.csv").drop(
         ['address', 'payment_account'],
         axis=1,
@@ -78,10 +88,10 @@ def prepareTestFeatures():
     return common, X_test
 
 
-def printSubmissionAverage(classifiers, X_train, y_train, name):
+def printSubmissionAverage(classifiers, X_train, y_train, name, featureList=[], newF=False):
     for clf in classifiers:
         clf.fit(X_train, y_train)
-    common, X_test = prepareTestFeatures()
+    common, X_test = prepareTestFeatures(featureList, newF)
     m = X_test.shape[0]
     totPr = np.zeros([m, 2])
     for clf in classifiers:

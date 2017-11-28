@@ -23,7 +23,7 @@ class RFLREstimator:
         )
         self.rf = RandomForestClassifier(
             n_estimators=160,
-            max_depth=20,
+            max_depth=10,
         )
         self.lr = LogisticRegression()
         self.rf.fit(X_train, y_train)
@@ -35,7 +35,13 @@ class RFLREstimator:
         return self.lr.predict_proba(self.enc.transform(self.rf.apply(X)))
 
 
-rflr = RFLREstimator()
-X_train, y_train = prepareTrainData()
-evaluateClassifier(rflr, X_train, y_train, name)
-printSubmission(rflr, X_train, y_train, name)
+if __name__ == "__main__":
+    rflr = RFLREstimator()
+    featureList = [
+        'bids_cnt', 'price_std', 'device_cnt', 'response_min',
+        'mean_bids_per_auction', 'price_max', 'response_median', 'country_cnt', 
+        'price_mean', 'response_mean'
+    ]
+    X_train, y_train = prepareTrainData(featureList)
+    evaluateClassifier(rflr, X_train, y_train, name)
+    printSubmission(rflr, X_train, y_train, name, featureList)

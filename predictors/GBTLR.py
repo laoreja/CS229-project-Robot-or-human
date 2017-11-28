@@ -10,7 +10,7 @@ from commons import printSubmission
 name = "GBTLR"
 
 
-class RFLREstimator:
+class GBTLREstimator:
 
     def get_params(self, deep=False):
         return {}
@@ -22,8 +22,8 @@ class RFLREstimator:
             test_size=0.5,
         )
         self.gbt = GradientBoostingClassifier(
-            n_estimators=100,
-            max_depth=10,
+            n_estimators=10,
+            max_depth=5,
             min_samples_leaf=2,
         )
         self.lr = LogisticRegression()
@@ -42,7 +42,11 @@ class RFLREstimator:
 
 
 if __name__ == "__main__":
-    gbtlr = RFLREstimator()
-    X_train, y_train = prepareTrainData()
+    gbtlr = GBTLREstimator()
+    featureList = [
+        'mean_bids_per_auction', 'tdiff_median', 'price_max', 
+        'tdiff_std', 'response_min', 'tdiff_min'
+    ]
+    X_train, y_train = prepareTrainData(featureList)
     evaluateClassifier(gbtlr, X_train, y_train, name)
-    printSubmission(gbtlr, X_train, y_train, name)
+    printSubmission(gbtlr, X_train, y_train, name, featureList)

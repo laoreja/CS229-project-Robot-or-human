@@ -6,6 +6,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import GradientBoostingClassifier
 from predictors.commons import excludeBidders
+from predictors.GaussianDiscriminantAnalysis import GDAEstimator
+from predictors.RFLR import RFLREstimator
+from predictors.GBTLR import GBTLREstimator
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn import svm
 
 feature_table_filename = "./features/new_all_feat.csv"
 
@@ -81,47 +87,66 @@ def featureSelection(clf, clfName):
     return selectedFeatures, axisAvgAUC
 
 
-rf = RandomForestClassifier(
-    n_estimators=160,
-    max_depth=8,
-)
-gbt = GradientBoostingClassifier(
-    n_estimators=100,
-    max_depth=10,
-    min_samples_leaf=2,
-)
-lr = LogisticRegression()
+def main():
+    rf = RandomForestClassifier(
+        n_estimators=160,
+        max_depth=8,
+    )
+    gbt = GradientBoostingClassifier(
+        n_estimators=100,
+        max_depth=10,
+        min_samples_leaf=2,
+    )
+    lr = LogisticRegression()
 
-# comment some classifiers if you want to skip them
-classifiers = {
-    "LR": lr,
-    "RF": rf,
-    "GBT": gbt,
-}
-
-results = {
-        name: featureSelection(
-            classifiers[name],
-            name,
-        )
-        for name in classifiers
+    # comment some classifiers if you want to skip them
+    classifiers = {
+        "LR": lr,
+        "RF": rf,
+        "GBT": gbt,
     }
 
-print results
-plt.clf()
-xs = range(1, len(results.values()[0][0]) + 1)
-patterns = ['x-b', 'x-r', 'x-g', 'x-c', 'd-b', 'd-r', 'd-g', 'd-c']
-idx = 0
-for name in results:
-    plt.plot(xs, results[name][1], patterns[idx], label=name)
-    idx += 1
-plt.xlabel("# of features")
-plt.ylabel("Average AUC (K=4)")
-plt.title("Feature Selection (Summary)")
-plt.legend(
-    loc='upper center',
-    bbox_to_anchor=(0.5, 1.1),
-    ncol=3,
-    fancybox=True,
+    results = {
+            name: featureSelection(
+                classifiers[name],
+                name,
+            )
+            for name in classifiers
+        }
+
+    print results
+    plt.clf()
+    xs = range(1, len(results.values()[0][0]) + 1)
+    patterns = ['x-b', 'x-r', 'x-g', 'x-c', 'd-b', 'd-r', 'd-g', 'd-c']
+    idx = 0
+    for name in results:
+        plt.plot(xs, results[name][1], patterns[idx], label=name)
+        idx += 1
+    plt.xlabel("# of features")
+    plt.ylabel("Average AUC (K=4)")
+    plt.title("Feature Selection (Summary)")
+    plt.legend(
+        loc='upper center',
+        bbox_to_anchor=(0.5, 1.1),
+        ncol=3,
+        fancybox=True,
+    )
+    plt.savefig("img/feature-selection-summary.eps")
+
+
+# main()
+# gda = GDAEstimator()
+# dt = DecisionTreeClassifier()
+# rflr = RFLREstimator()
+# gbtlr = GBTLREstimator()
+# svc = svm.SVC(kernel='rbf', probability=True)
+rf = RandomForestClassifier(
+    n_estimators=160,
+    max_depth=10,
 )
-plt.savefig("img/feature-selection-summary.eps")
+rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
+# featureSelection(dt, "DT")
+# featureSelection(rflr, "RFLR")
+# featureSelection(gbtlr, "GBTLR")
+# featureSelection(svc, "SVMRBF")
+featureSelection(rf, "RFAda")

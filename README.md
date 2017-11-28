@@ -37,25 +37,40 @@
 - [x] GDA
 
 ### Cross-Validation Result (K=4)
-Model  | CV Average AUC (K=4) | Features used
+#### use all features
+Model  |Training AUC| CV Average AUC (K=4) | Features used
 --|--|--
-Logistic Regression|0.808161240231|`new_all_feat.csv`
-SVM(RBF)|0.887362701586|new_feat_for_dnn.csv
-SVM(Linear)|0.665470643041|new_feat_for_dnn.csv
-Decision Tree|0.648740361594|`new_all_feat.csv`
-Random Forest|0.940371307088|`new_all_feat.csv`
-Random Forest Adaboost|0.937282646135|`new_all_feat.csv`
-Gradient Boost Tree|0.927422406274|`new_all_feat.csv`
-GDA|0.746763663678|`new_all_feat.csv`
-DNN|0.861422|new_feat_for_dnn.csv
-RFLR|0.925524029599|`new_all_feat.csv`
-GBTLR|0.906152747935|`new_all_feat.csv`
+Logistic Regression|0.873173192722|0.808161240231|`new_all_feat.csv`
+SVM(RBF)|1.0|0.887362701586|new_feat_for_dnn.csv
+SVM(Linear)|0.998117588343|0.665470643041|new_feat_for_dnn.csv
+Decision Tree||0.648740361594|`new_all_feat.csv`
+Random Forest|0.99995660146|0.940371307088|`new_all_feat.csv`
+Random Forest Adaboost|1.0|0.937282646135|`new_all_feat.csv`
+Gradient Boost Tree|1.0|0.918035048245|`new_all_feat.csv`
+GDA|0.752102116764|0.746763663678|`new_all_feat.csv`
+DNN||0.861422|new_feat_for_dnn.csv
+RFLR|0.993680087665|0.925524029599|`new_all_feat.csv`
+GBTLR|0.953118727555|0.912516532117|`new_all_feat.csv`
 
+#### use feature selection
+Model  |Training AUC| CV Average AUC (K=4) | Features used
+--|--|--
+Logistic Regression|0.905434582126|0.905261880562|`new_all_feat.csv`
+SVM(RBF)|0.998220659875|0.909697711975|`new_all_feat.csv`
+SVM(Linear)|||new_feat_for_dnn.csv
+Decision Tree|0.867897557747|0.801296381624|`new_all_feat.csv`
+Random Forest|0.999663661318|0.940295232529|`new_all_feat.csv`
+Random Forest Adaboost|||`new_all_feat.csv`
+Gradient Boost Tree|1.0|0.934069527262|`new_all_feat.csv`
+GDA|0.849059879135|0.84798183378|`new_all_feat.csv`
+DNN||0.861422|new_feat_for_dnn.csv
+RFLR|0.988754353416|0.932652492807|`new_all_feat.csv`
+GBTLR|0.937573913138|0.91208076084|`new_all_feat.csv`
 
 ## Content
 - [x] Feature selection
 - [x] Ablative analysis on features
-- [ ] Model combination
+- [x] Model combination
 - [ ] Deep Learning (optimization problems: data imbalance, overfitting)
 - [ ] Cross Validation to tune (hyper)parameters
 

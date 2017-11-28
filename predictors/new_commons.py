@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.cross_validation import cross_val_score
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_auc_score
 from scipy import interp
 
 
@@ -14,7 +15,7 @@ excludeBidders = [
     "f35082c6d72f1f1be3dd23f949db1f577t6wd",
 ]
 
-basedir = '..'
+basedir = '.'
 feature_subdir = 'features'
 data_subdir = 'data'
 feat_name = 'new_feat_for_dnn.csv'
@@ -28,11 +29,13 @@ def filterFeatures(dfFeatures):
     return dfFeatures[lst]
 
 
-def prepareTrainData():
+def prepareTrainData(featureList=[]):
     dfFeatures = pd.read_csv(os.path.join(basedir, feature_subdir, feat_name))
     dfFeatures.drop('Unnamed: 0', axis=1, inplace=True)
     for b in excludeBidders:
         dfFeatures = dfFeatures[dfFeatures.bidder_id != b]
+    if featureList != []:
+        dfFeatures = dfFeatures[featureList + ["bidder_id"]]
     dfLabels = pd.read_csv(os.path.join(basedir, data_subdir, "train.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
@@ -62,9 +65,11 @@ def evaluateClassifier(classifier, X_train, y_train, name):
     )
 
 
-def printSubmission(classifier, X_train, y_train, name):
+def printSubmission(classifier, X_train, y_train, name, featureList=[]):
     classifier.fit(X_train, y_train)
-    common, X_test = prepareTestFeatures()
+    y_hat = classifier.predict_proba(X_train)[:, 1]
+    print "[{}] Training AUC: {}".format(name, roc_auc_score(y_train, y_hat))
+    common, X_test = prepareTestFeatures(featureList)
     prediction = classifier.predict_proba(X_test)
     prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
@@ -74,9 +79,11 @@ def printSubmission(classifier, X_train, y_train, name):
     )
 
 
-def prepareTestFeatures():
+def prepareTestFeatures(featureList):
     dfFeatures = pd.read_csv(os.path.join(basedir, feature_subdir, feat_name))
     dfFeatures.drop('Unnamed: 0', axis=1, inplace=True)
+    if featureList != []:
+        dfFeatures = dfFeatures[featureList + ["bidder_id"]]
     dfTest = pd.read_csv(os.path.join(basedir, data_subdir, "test.csv")).drop(
         ['address', 'payment_account'],
         axis=1,
@@ -93,10 +100,10 @@ def prepareTestFeatures():
     return common, X_test
 
 
-def printSubmissionAverage(classifiers, X_train, y_train, name):
+def printSubmissionAverage(classifiers, X_train, y_train, name, featureList=[]):
     for clf in classifiers:
         clf.fit(X_train, y_train)
-    common, X_test = prepareTestFeatures()
+    common, X_test = prepareTestFeatures(featureList)
     m = X_test.shape[0]
     totPr = np.zeros([m, 2])
     for clf in classifiers:
