@@ -4,7 +4,7 @@ predictors/dnn_log_0.778
 predictors/dnn_log_0.80/
 predictors/dnn_log
 predictors/dnn_cv_*
-!predictors/dnn_cv_2_*
+
 
 data
 data/*

@@ -1,5 +1,5 @@
 from sklearn.linear_model import LogisticRegression
-from commons import *
+from new_commons import *
 
 name = "LR"
 

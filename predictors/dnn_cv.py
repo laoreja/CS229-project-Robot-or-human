@@ -10,14 +10,15 @@ from new_commons import *
 
 name = "DNN_CV_2"
 FEATURE_DIM = 668
-BASE_LEARNING_RATE = 0.01
+BASE_LEARNING_RATE = 0.0001
 BATCH_SIZE = 100
-DECAY_STEP = 1120 # 14 step per epoch
-DECAY_RATE = 0.33
-MAX_EPOCH = 300
+#DECAY_STEP = 100000 # 14 step per epoch
+#DECAY_RATE = 0.33
+MAX_EPOCH = 30
+do_CV = False
 do_train = True
 do_test = True
-K = 5
+K = 10
 LOG_DIR_base = 'dnn_cv_2_'
 
 def _variable_with_weight_decay(name, shape, stddev, wd, use_xavier=True):
@@ -38,7 +39,7 @@ def fully_connected(inputs,
                     stddev=1e-3,
                     weight_decay=1e-4,
                     activation_fn=tf.nn.relu,
-                    bn=True,
+                    bn=False,
                     bn_decay=0.0,
                     is_training=None):
     with tf.variable_scope(scope) as sc:
@@ -75,28 +76,31 @@ def dropout(inputs,
 def dnn_model(features, is_training):
     net = fully_connected(features, 256, scope='fc1', is_training=is_training)
     net = dropout(net, is_training, scope='dp1', keep_prob = 0.8)
-    net = fully_connected(net, 256, scope='fc2', is_training=is_training)
+    net = fully_connected(net, 128, scope='fc2', is_training=is_training)
     net = dropout(net, is_training, scope='dp2', keep_prob = 0.6)    
-#    net = fully_connected(net, 1024, scope='fc3', is_training=is_training)
-#    net = dropout(net, is_training, scope='dp3', keep_prob = 0.6)
     net = fully_connected(net, 2, scope='fc_final', is_training=is_training, activation_fn=None)
     return net
 
 def get_loss(pred, label):
-    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=pred, labels=label)
+#    print(label)
+#    print(pred)
+    loss = tf.nn.weighted_cross_entropy_with_logits(targets=tf.cast(label, tf.float32),
+    logits=pred[:, 1] - pred[:, 0],
+    pos_weight=19)
+#    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=pred, labels=label)
     classify_loss = tf.reduce_mean(loss)
     return classify_loss
 
 def get_learning_rate(step):
-    learning_rate = tf.train.exponential_decay(
-                        BASE_LEARNING_RATE,  # Base learning rate.
-                        step * BATCH_SIZE,  # Current index into the dataset.
-                        DECAY_STEP,          # Decay step.
-                        DECAY_RATE,          # Decay rate.
-                        staircase=True)
-    learning_rate = tf.maximum(learning_rate, 0.00001) # CLIP THE LEARNING RATE!
-    return learning_rate        
-#    return BASE_LEARNING_RATE
+#    learning_rate = tf.train.exponential_decay(
+#                        BASE_LEARNING_RATE,  # Base learning rate.
+#                        step * BATCH_SIZE,  # Current index into the dataset.
+#                        DECAY_STEP,          # Decay step.
+#                        DECAY_RATE,          # Decay rate.
+#                        staircase=True)
+#    learning_rate = tf.maximum(learning_rate, 0.00001) # CLIP THE LEARNING RATE!
+#    return learning_rate        
+    return BASE_LEARNING_RATE
 
     
 def train(MAX_EPOCH, train_data, train_labels, eval_data, eval_labels, LOG_DIR):
@@ -163,9 +167,9 @@ def train(MAX_EPOCH, train_data, train_labels, eval_data, eval_labels, LOG_DIR):
                 start_idx += BATCH_SIZE
                 if start_idx + BATCH_SIZE > train_data.shape[0]:
                     break
-            if epoch % 10 == 9:
-                train_auc = roc_auc_score(train_labels[:num_batches * BATCH_SIZE], probability)
-                print('epoch: %d, loss: %f, \taccuracy: %f, \tAUC: %f' % (epoch, loss_sum / float(num_batches), total_correct / float(total_seen), train_auc))
+#            if epoch % 10 == 9:
+            train_auc = roc_auc_score(train_labels[:num_batches * BATCH_SIZE], probability)
+            print('epoch: %d, loss: %f, \taccuracy: %f, \tAUC: %f' % (epoch, loss_sum / float(num_batches), total_correct / float(total_seen), train_auc))
             
             # eval
             _, pred_val, loss_val = sess.run([step, pred, loss], feed_dict={features_pl:eval_data, labels_pl:eval_labels, is_training_pl:False})
@@ -184,8 +188,8 @@ def train(MAX_EPOCH, train_data, train_labels, eval_data, eval_labels, LOG_DIR):
                 best_eval_epoch = epoch
                 save_path = saver.save(sess, os.path.join(LOG_DIR, "model_best.ckpt"))
             
-            if epoch % 10 == 9:
-                print('     eval loss: %f, \taccuracy: %f, \tAUC: %f\n' % (loss_val, eval_accuracy, eval_auc))
+#            if epoch % 10 == 9:
+            print('     eval loss: %f, \taccuracy: %f, \tAUC: %f\n' % (loss_val, eval_accuracy, eval_auc))
                         
             
             # Save the variables to disk.
@@ -209,11 +213,15 @@ def predict(test_data, LOG_DIR_base):
         saver = tf.train.Saver()
         sess = tf.Session()
         
-        for i in xrange(K):
-            saver.restore(sess, os.path.join(LOG_DIR_base+str(i), "model_best.ckpt"))
-            pred_val = sess.run(best_model, feed_dict={features_pl:test_data, is_training_pl:False})
-            pred_val_list.append(pred_val[:, None].copy())
-        return np.mean(np.hstack(pred_val_list) ,axis=1)
+        saver.restore(sess, os.path.join(LOG_DIR_base, "model_best.ckpt"))
+        pred_val = sess.run(best_model, feed_dict={features_pl:test_data, is_training_pl:False})
+        return pred_val
+        
+#        for i in xrange(K):
+#            saver.restore(sess, os.path.join(LOG_DIR_base+str(i), "model_best.ckpt"))
+#            pred_val = sess.run(best_model, feed_dict={features_pl:test_data, is_training_pl:False})
+#            pred_val_list.append(pred_val[:, None].copy())
+#        return np.mean(np.hstack(pred_val_list) ,axis=1)
 
 def main(unused_argv):
 ##    print(human.shape) # 1881 1881/5 = 376
@@ -221,31 +229,31 @@ def main(unused_argv):
     X_train, y_train = prepareTrainData()
     mean = np.mean(X_train, axis=0)
     std = np.std(X_train, axis=0)
-        
-    if do_train:
-        X_train = (X_train - mean) / (std + 0.001)        
-        tmp = np.hstack([X_train, y_train[:, None]])
+    
+    X_train = (X_train - mean) / (std + 0.001)        
+    tmp = np.hstack([X_train, y_train[:, None]])
 
-        human = tmp[y_train == 0, :] # 1881
-        human = human[np.random.permutation(human.shape[0]), :]
-        robot = tmp[y_train == 1, :] # 98
-        robot = robot[np.random.permutation(robot.shape[0]), :]    
+    human = tmp[y_train == 0, :] # 1881
+    human = human[np.random.permutation(human.shape[0]), :]
+    robot = tmp[y_train == 1, :] # 98
+    robot = robot[np.random.permutation(robot.shape[0]), :]    
+    
+    tmp_train_split = np.vstack([human[:-31, :], robot[:-8,:]])
+    tmp_eval_split = np.vstack([human[-31:, :], robot[-8:,:]])
+    
+    eval_data = tmp_eval_split[:, :-1]
+    eval_labels = tmp_eval_split[:, -1].astype(np.int32)
+    
+    print(eval_data.shape)
+    print(eval_labels.shape)
+    print()
         
-        tmp_train_split = np.vstack([human[:-31, :], robot[:-3,:]])
-        tmp_eval_split = np.vstack([human[-31:, :], robot[-3:,:]])
-        
-        eval_data = tmp_eval_split[:, :-1]
-        eval_labels = tmp_eval_split[:, -1].astype(np.int32)
-        
-        print(eval_data.shape)
-        print(eval_labels.shape)
-        print()
-        
+    if do_CV:
         CV_human_splits = np.split(tmp_train_split[tmp_train_split[:, -1] == 0], K, axis=0)
         CV_robot_splits = np.split(tmp_train_split[tmp_train_split[:, -1] == 1], K, axis=0)
         score = 0
         for i in xrange(K):
-            sub_train_split = np.vstack(CV_human_splits[:i] + CV_human_splits[i+1:] + (CV_robot_splits[:i] + CV_robot_splits[i+1:])*19)
+            sub_train_split = np.vstack(CV_human_splits[:i] + CV_human_splits[i+1:] + (CV_robot_splits[:i] + CV_robot_splits[i+1:]))
             sub_hold_out_split = np.vstack([CV_human_splits[i], CV_robot_splits[i]])
             print('Train %dth CV' % i)
             score += train(MAX_EPOCH, sub_train_split[:, :-1], sub_train_split[:, -1], sub_hold_out_split[:, :-1], sub_hold_out_split[:, -1], LOG_DIR_base+str(i))
@@ -261,11 +269,14 @@ def main(unused_argv):
         eval_auc = roc_auc_score(eval_labels, probability)
         print('Eval accuracy: %f, AUC: %f' % (eval_accuracy, eval_auc))
     
+    if do_train:
+        train(MAX_EPOCH, tmp_train_split[:, :-1], tmp_train_split[:, -1], eval_data, eval_labels, LOG_DIR_base+'all')
+    
     if do_test:    
         common, X_test = prepareTestFeatures()
         X_test = (X_test - mean) / (std + 0.001)
         
-        prediction = predict(X_test, LOG_DIR_base)
+        prediction = predict(X_test, LOG_DIR_base+'all')
         print(type(prediction))
         print(prediction.shape)
         prediction = prediction - np.max(prediction, axis=1)[:, None]
