@@ -15,7 +15,7 @@ excludeBidders = [
     "f35082c6d72f1f1be3dd23f949db1f577t6wd",
 ]
 
-basedir = '.'
+basedir = '..'
 feature_subdir = 'features'
 data_subdir = 'data'
 feat_name = 'new_feat_for_dnn.csv'
@@ -41,6 +41,8 @@ def prepareTrainData(featureList=[]):
         axis=1,
     )
     common = dfFeatures.merge(dfLabels, on='bidder_id')
+    print 'nan' in common.columns
+    print 'vc' in common.columns
 #    print common.drop(['bidder_id', 'outcome'], axis=1).columns[598]
 #    print common.drop(['bidder_id', 'outcome'], axis=1).columns[660]
     if feat_name == 'new_feat_for_dnn.csv':
