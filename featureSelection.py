@@ -13,8 +13,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn import svm
 
-from sklearn.neural_network import MLPClassifier
-
 feature_table_filename = "./features/new_all_feat.csv"
 
 
@@ -43,7 +41,6 @@ def featureSelection(clf, clfName):
     common = dfFeatures.merge(dfLabels, on='bidder_id')
     y_train = np.ravel(common[['outcome']])
     dfX = common.drop(['bidder_id', 'outcome'], axis=1)
-    dfX = (dfX - np.mean(dfX, axis = 0)) / np.std(dfX, axis = 0)
     lstFeatures = list(dfX)
     candidateFeatures = set(lstFeatures)
 
@@ -143,16 +140,13 @@ def main():
 # rflr = RFLREstimator()
 # gbtlr = GBTLREstimator()
 # svc = svm.SVC(kernel='rbf', probability=True)
-#rf = RandomForestClassifier(
-#    n_estimators=160,
-#    max_depth=10,
-#)
-#rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
-## featureSelection(dt, "DT")
-## featureSelection(rflr, "RFLR")
-## featureSelection(gbtlr, "GBTLR")
-## featureSelection(svc, "SVMRBF")
-#featureSelection(rf, "RFAda")
-
-MLPC = MLPClassifier(hidden_layer_sizes=(100), solver='sgd', max_iter=30, early_stopping=False, learning_rate_init=0.01)
-featureSelection(MLPC, "MLPC")
+rf = RandomForestClassifier(
+    n_estimators=160,
+    max_depth=10,
+)
+rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
+# featureSelection(dt, "DT")
+# featureSelection(rflr, "RFLR")
+# featureSelection(gbtlr, "GBTLR")
+# featureSelection(svc, "SVMRBF")
+featureSelection(rf, "RFAda")
