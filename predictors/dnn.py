@@ -12,25 +12,26 @@ import matplotlib.pyplot as plt
 from new_commons import *
 
 
-np.random.seed(179)
+#np.random.seed(179)
 
 name = "DNN"
 FEATURE_DIM = 668
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 LOG_DIR = 'dnn_log'
 
-lrs = [0.001, 0.0001, 0.00001]
+lrs = [0.01, 0.001]#, 0.01, 0.001, 0.0001]
 BASE_LEARNING_RATE = None#= 0.0001
 #DECAY_STEP = 100000 # 14 step per epoch
 #DECAY_RATE = 0.33
-MAX_EPOCH = 300
+MAX_EPOCH = 100
 
-save = False
+save = True
 restore = False
 do_train = True
 do_test = True
 
-global_best_auc = None
+#global_best_auc = None
+global_min_loss = None
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd, use_xavier=True):
@@ -49,7 +50,7 @@ def fully_connected(inputs,
                     scope,
                     use_xavier=True,
                     stddev=1e-3,
-                    weight_decay=1e-4,
+                    weight_decay=0,#1e-4,
                     activation_fn=tf.nn.relu,
                     bn=False,
                     bn_decay=0.0,
@@ -86,10 +87,10 @@ def dropout(inputs,
 
 
 def dnn_model(features, is_training):
-    net = fully_connected(features, 200, scope='fc1', is_training=is_training)
+    net = fully_connected(features, 100, scope='fc1', is_training=is_training)
     net = dropout(net, is_training, scope='dp1', keep_prob = 0.5)
-#    net = fully_connected(net, 100, scope='fc2', is_training=is_training)
-#    net = dropout(net, is_training, scope='dp2', keep_prob = 0.5)    
+    net = fully_connected(net, 100, scope='fc2', is_training=is_training)
+    net = dropout(net, is_training, scope='dp2', keep_prob = 0.5)    
 #    net = fully_connected(net, 10, scope='fc3', is_training=is_training)
 #    net = dropout(net, is_training, scope='dp3', keep_prob = 0.3)        
     net = fully_connected(net, 2, scope='fc_final', is_training=is_training, activation_fn=None)
@@ -127,6 +128,120 @@ def get_learning_rate(losses, lr):
 #    return learning_rate        
 #    return BASE_LEARNING_RATE
 
+def train_min_loss(MAX_EPOCH, train_data, train_labels, idx):
+    with tf.Graph().as_default():
+        features_pl = tf.placeholder(tf.float32, shape=(None, FEATURE_DIM))
+        labels_pl = tf.placeholder(tf.float32, shape=(None))
+        is_training_pl = tf.placeholder(tf.bool, shape=())
+        
+        learning_rate = tf.placeholder(tf.float32, shape=())
+        
+        pred = dnn_model(features_pl, is_training_pl)
+        loss = get_loss(pred, labels_pl)
+        
+        step = tf.Variable(0)
+        
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+        train_op = optimizer.minimize(loss, global_step=step)
+        
+        saver = tf.train.Saver()
+        
+        sess = tf.Session()
+        init = tf.global_variables_initializer()
+        sess.run(init, {is_training_pl: True})
+        if restore:
+            saver.restore(sess, join(LOG_DIR, 'model_best.ckpt'))
+        
+        best_auc = None
+        best_accuracy = None
+        best_epoch = None
+        best_loss = None
+        
+        losses = []
+        learning_rate_val = BASE_LEARNING_RATE
+        stats = defaultdict(list)
+        
+        for epoch in range(MAX_EPOCH):            
+            # train
+            p = np.random.permutation(train_data.shape[0])
+            train_data = train_data[p,:]
+            train_labels = train_labels[p]
+            
+            start_idx = 0
+            total_correct = 0
+            total_seen = 0
+            loss_sum = 0
+            num_batches = train_data.shape[0]//BATCH_SIZE
+            
+            probability = np.zeros(num_batches * BATCH_SIZE)
+            
+            learning_rate_val = get_learning_rate(losses, learning_rate_val)
+            
+            while(True):                
+                end_idx = start_idx + BATCH_SIZE
+                batch_data = train_data[start_idx:end_idx, :]
+                batch_labels = train_labels[start_idx:end_idx]
+
+                _, _, pred_val, loss_val = sess.run([step, train_op, pred, loss], feed_dict={features_pl:batch_data, labels_pl:batch_labels, is_training_pl:True, learning_rate:learning_rate_val})
+                new_pred_val = np.argmax(pred_val, 1)
+                correct = np.sum(new_pred_val == batch_labels)
+                total_correct += correct
+                total_seen += BATCH_SIZE
+                loss_sum += loss_val
+                
+                normed_pred_val = pred_val - np.max(pred_val, axis=1)[:, None]
+                probability[start_idx:end_idx] = np.exp(normed_pred_val[:, 1]) / np.sum(np.exp(normed_pred_val),axis=1)
+                
+                start_idx += BATCH_SIZE
+                if start_idx + BATCH_SIZE > train_data.shape[0]:
+                    break
+            
+            train_loss = loss_sum / float(num_batches)
+            train_auc = roc_auc_score(train_labels[:num_batches * BATCH_SIZE], probability)
+            train_accuracy = total_correct / float(total_seen)
+            print('epoch: %d, lr:%f\ntrain loss: %f, \taccuracy: %f, \tAUC: %f' % (epoch, learning_rate_val, train_loss, train_accuracy, train_auc))
+            stats['lr'].append(learning_rate_val)
+            stats['train_loss'].append(train_loss)
+            stats['train_accuracy'].append(train_accuracy)
+            stats['train_auc'].append(train_auc)
+            
+            if best_loss is None or train_loss < best_loss:
+                best_auc = train_auc
+                best_accuracy = train_accuracy
+                best_epoch = epoch
+                best_loss = train_loss
+            if save:
+                global global_min_loss
+                if global_min_loss is None or train_loss < global_min_loss:
+                    save_path = saver.save(sess, os.path.join(LOG_DIR, "model_best.ckpt"))
+                    global_min_loss = train_loss                        
+            
+#             Save the variables to disk.
+#            if epoch % 50 == 0:
+#                save_path = saver.save(sess, os.path.join(LOG_DIR, "model.ckpt"))
+#                print("Model saved in file: %s" % save_path)
+        save_path = saver.save(sess, os.path.join(LOG_DIR, "model.ckpt"))
+        print("Model saved in file: %s" % save_path)
+        print('best auc at epoch: %d, loss: %f, accuracy: %f, AUC: %f' % (best_epoch, best_loss, best_accuracy, best_auc))
+        
+        #plot
+        plt.subplot(len(lrs), 3, idx*3+1)
+        plt.plot(xrange(1, MAX_EPOCH+1), stats['train_loss'], 'b-', label='train_loss')
+        plt.legend()
+        plt.title('LR=%f, Loss'%lrs[idx])
+        plt.subplot(len(lrs), 3, idx*3+2)
+        plt.plot(xrange(1, MAX_EPOCH+1), stats['train_accuracy'], 'b-', label='train_accuracy')
+        plt.legend()
+        plt.title('Accuracy')
+        plt.subplot(len(lrs), 3, idx*3+3)
+        plt.plot(xrange(1, MAX_EPOCH+1), stats['train_auc'], 'b-', label='train_auc')
+        plt.legend()
+        plt.title('AUC')
+#        plt.subplot(len(lrs), 3, idx*3+4)
+#        plt.plot(xrange(1, MAX_EPOCH+1), stats['lr'], 'm-', label='lr')
+#        plt.legend()
+        
+        return best_epoch, best_loss, best_accuracy, best_auc
     
 def train(MAX_EPOCH, train_data, train_labels, eval_data, eval_labels, idx):
     with tf.Graph().as_default():
@@ -288,19 +403,19 @@ def main(unused_argv):
     if do_train:
         X_train = (X_train - mean) / (std + 0.001)
         
-        tmp = np.hstack([X_train, y_train[:, None]])
-
-        human = tmp[y_train == 0, :] # 1881
-        human = human[np.random.permutation(human.shape[0]), :]
-        robot = tmp[y_train == 1, :] # 98
-        robot = robot[np.random.permutation(robot.shape[0]), :]    
-        
-        train_split = np.vstack([human[:-470, :], robot[:-24,:]])
-        eval_split = np.vstack([human[-470:, :], robot[-24:,:]])
-        print(train_split.shape)
-        print(eval_split.shape)
-        print(train_split[-10:, -1])
-        print(eval_split[-10:, -1])
+#        tmp = np.hstack([X_train, y_train[:, None]])
+#
+#        human = tmp[y_train == 0, :] # 1881
+#        human = human[np.random.permutation(human.shape[0]), :]
+#        robot = tmp[y_train == 1, :] # 98
+#        robot = robot[np.random.permutation(robot.shape[0]), :] 
+#        
+#        train_split = np.vstack([human[:-470, :], robot[:-24,:]])
+#        eval_split = np.vstack([human[-470:, :], robot[-24:,:]])
+#        print(train_split.shape)
+#        print(eval_split.shape)
+#        print(train_split[-10:, -1])
+#        print(eval_split[-10:, -1])
         
         best_lr = None
         best_epoch = None
@@ -313,14 +428,18 @@ def main(unused_argv):
             print('LR = %f' % lr)
             global BASE_LEARNING_RATE
             BASE_LEARNING_RATE = lr
-            epoch, loss, accuracy, AUC = train(MAX_EPOCH, train_split[:, :-1], train_split[:, -1], eval_split[:, :-1], eval_split[:, -1], idx)
-            if best_AUC is None or best_AUC < AUC:
+            
+            epoch, loss, accuracy, AUC = train_min_loss(MAX_EPOCH, X_train, y_train, idx)
+#            epoch, loss, accuracy, AUC = train(MAX_EPOCH, train_split[:, :-1], train_split[:, -1], eval_split[:, :-1], eval_split[:, -1], idx)
+            if best_loss is None or loss < best_loss:
+#            if best_AUC is None or best_AUC < AUC:
                 best_epoch = epoch
                 best_accuracy = accuracy
                 best_AUC = AUC
                 best_lr = lr
                 best_loss = loss
         print('Best LR: %f epoch: %d loss:%f accuracy: %f AUC: %f' % (best_lr, best_epoch, best_loss, best_accuracy, best_AUC))
+        print('Global min loss:%f' % global_min_loss)
         plt.savefig(join(LOG_DIR, 'plt.eps'))
 #        plt.show()
         

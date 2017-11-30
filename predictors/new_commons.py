@@ -5,7 +5,7 @@ from sklearn.cross_validation import StratifiedKFold
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import roc_auc_score
 from scipy import interp
-
+from sklearn.neural_network import MLPClassifier
 
 excludeBidders = [
     "74a35c4376559c911fdb5e9cfb78c5e4btqew",
@@ -41,10 +41,8 @@ def prepareTrainData(featureList=[]):
         axis=1,
     )
     common = dfFeatures.merge(dfLabels, on='bidder_id')
-    print 'nan' in common.columns
-    print 'vc' in common.columns
-#    print common.drop(['bidder_id', 'outcome'], axis=1).columns[598]
-#    print common.drop(['bidder_id', 'outcome'], axis=1).columns[660]
+#    print 'nan' in common.columns
+#    print 'vc' in common.columns
     if feat_name == 'new_feat_for_dnn.csv':
         X_train = np.array(common.drop(['bidder_id', 'outcome', 'nan', 'vc'], axis=1))
     else:
@@ -67,11 +65,13 @@ def evaluateClassifier(classifier, X_train, y_train, name):
     )
 
 
-def printSubmission(classifier, X_train, y_train, name, featureList=[]):
+def printSubmission(classifier, X_train, y_train, name, featureList=[], mean=None, std=None):        
     classifier.fit(X_train, y_train)
     y_hat = classifier.predict_proba(X_train)[:, 1]
     print "[{}] Training AUC: {}".format(name, roc_auc_score(y_train, y_hat))
     common, X_test = prepareTestFeatures(featureList)
+    if isinstance(classifier, MLPClassifier):
+        X_test = (X_test - mean) / (std + 0.001)
     prediction = classifier.predict_proba(X_test)
     prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
@@ -81,7 +81,7 @@ def printSubmission(classifier, X_train, y_train, name, featureList=[]):
     )
 
 
-def prepareTestFeatures(featureList):
+def prepareTestFeatures(featureList=[]):
     dfFeatures = pd.read_csv(os.path.join(basedir, feature_subdir, feat_name))
     dfFeatures.drop('Unnamed: 0', axis=1, inplace=True)
     if featureList != []:

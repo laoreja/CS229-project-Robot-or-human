@@ -48,7 +48,8 @@ Random Forest|0.99995660146|0.940371307088|`new_all_feat.csv`
 Random Forest Adaboost|1.0|0.937282646135|`new_all_feat.csv`
 Gradient Boost Tree|1.0|0.918035048245|`new_all_feat.csv`
 GDA|0.752102116764|0.746763663678|`new_all_feat.csv`
-DNN|TODO|0.861422|new_feat_for_dnn.csv
+DNN|0.965523|NA|`new_feat_for_dnn.csv`
+DNN_sklearn|0.999875229199|0.838388269639|`new_feat_for_dnn.csv`
 RFLR|0.993680087665|0.925524029599|`new_all_feat.csv`
 GBTLR|0.953118727555|0.912516532117|`new_all_feat.csv`
 
@@ -56,14 +57,15 @@ GBTLR|0.953118727555|0.912516532117|`new_all_feat.csv`
 Model  |Training AUC| CV Average AUC (K=4) | Features used
 --|--|--|--
 Logistic Regression|0.905434582126|0.905261880562|`new_all_feat.csv`
+Logistic Regression|0.905434582126|0.0.845475487871|`new_all_feat.csv`
 SVM(RBF)|0.998220659875|0.909697711975|`new_all_feat.csv`
-SVM(Linear)|NA|NA|new_feat_for_dnn.csv
+SVM(Linear)|NA|NA|`new_feat_for_dnn.csv`
 Decision Tree|0.867897557747|0.801296381624|`new_all_feat.csv`
 Random Forest|0.999663661318|0.940295232529|`new_all_feat.csv`
 Random Forest Adaboost|1.0|0.945450916452|`new_all_feat.csv`
 Gradient Boost Tree|1.0|0.934069527262|`new_all_feat.csv`
 GDA|0.849059879135|0.84798183378|`new_all_feat.csv`
-DNN|NA|NA|new_feat_for_dnn.csv
+DNN|NA (Python quit unexpectedly)|NA|`new_feat_for_dnn.csv`
 RFLR|0.988754353416|0.932652492807|`new_all_feat.csv`
 GBTLR|0.937573913138|0.91208076084|`new_all_feat.csv`
 
