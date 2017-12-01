@@ -27,7 +27,7 @@ MAX_EPOCH = 100
 
 save = True
 restore = False
-do_train = True
+do_train = False
 do_test = True
 
 #global_best_auc = None
@@ -446,6 +446,7 @@ def main(unused_argv):
         
     if do_test:    
         common, X_test = prepareTestFeatures()
+        print(X_test.shape)
         X_test = (X_test - mean) / (std + 0.001)
         
         prediction = predict(X_test)
