@@ -1,0 +1,37 @@
+Ablative Analysis for RF
+Full feature sets 	0.941721086303
+mean_bids_per_auction 	0.934098048516
+price_std 	0.935291082238
+price_min 	0.93805762129
+tdiff_median 	0.938300633555
+bids_cnt 	0.939024599652
+device_cnt 	0.939029348489
+url_entropy 	0.939344078918
+tdiff_ip 	0.939415757555
+response_min 	0.939573736843
+country_cnt 	0.941199645955
+tdiff_min 	0.94225495494
+country_cnt_mean_auc 	0.943314792542
+ip_entropy 	0.943680176289
+auction_cnt 	0.943946204319
+tdiff_mean 	0.945568767787
+
+Ablative Analysis for LR
+Full feature sets 	0.903985284817
+mean_bids_per_auction 	0.773227907463
+url_entropy 	0.900394017934
+tdiff_min 	0.900550599675
+tdiff_median 	0.903226588969
+
+Ablative Analysis for GBT
+Full feature sets 	0.93450941862
+bids_cnt 	0.890807209084
+price_std 	0.921247043976
+tdiff_median 	0.921928332656
+tdiff_mean 	0.924854513936
+response_std 	0.930504952116
+country_cnt 	0.930772993179
+tdiff_std 	0.932542841171
+tdiff_zeros 	0.934879517324
+response_min 	0.936900788273
+

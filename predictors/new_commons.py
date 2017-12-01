@@ -70,8 +70,8 @@ def printSubmission(classifier, X_train, y_train, name, featureList=[], mean=Non
     y_hat = classifier.predict_proba(X_train)[:, 1]
     print "[{}] Training AUC: {}".format(name, roc_auc_score(y_train, y_hat))
     common, X_test = prepareTestFeatures(featureList)
-    if isinstance(classifier, MLPClassifier):
-        X_test = (X_test - mean) / (std + 0.001)
+#    if isinstance(classifier, MLPClassifier):
+#        X_test = (X_test - mean) / (std + 0.001)
     prediction = classifier.predict_proba(X_test)
     prediction = [float(x[1]) for x in prediction]
     predictionDf = pd.DataFrame(data={"prediction": prediction})
