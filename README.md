@@ -57,7 +57,6 @@ GBTLR|0.953118727555|0.912516532117|`new_all_feat.csv`
 Model  |Training AUC| CV Average AUC (K=4) | Features used
 --|--|--|--
 Logistic Regression|0.905434582126|0.905261880562|`new_all_feat.csv`
-Logistic Regression|0.905434582126|0.0.845475487871|`new_all_feat.csv`
 SVM(RBF)|0.998220659875|0.909697711975|`new_all_feat.csv`
 SVM(Linear)|NA|NA|`new_feat_for_dnn.csv`
 Decision Tree|0.867897557747|0.801296381624|`new_all_feat.csv`
