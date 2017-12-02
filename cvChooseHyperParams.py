@@ -22,6 +22,7 @@ all_max_feature = range(1, len(featureList) + 1)
 
 paramsList = []
 aucList = []
+bestAucList = []
 for i in range(30000):
     n_estimators = random.choice(all_n_estimators)
     max_depth = random.choice(all_max_depth)
@@ -53,5 +54,11 @@ for i in range(30000):
         aucList[idx],
         paramsList[idx],
     )
+    bestAucList.append(aucList[idx])
+    with open("hyper-params.log", "w") as f:
+        f.write(', '.join(map(lambda x: str(x), bestAucList)))
+        f.write("\n")
+        f.write(', '.join(map(lambda x: str(x), aucList)))
+
 
 

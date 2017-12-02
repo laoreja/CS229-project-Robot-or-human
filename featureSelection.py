@@ -140,13 +140,15 @@ def main():
 # rflr = RFLREstimator()
 # gbtlr = GBTLREstimator()
 # svc = svm.SVC(kernel='rbf', probability=True)
-rf = RandomForestClassifier(
-    n_estimators=160,
-    max_depth=10,
-)
-rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
+svc = svm.SVC(kernel='linear', cache_size=7000, probability=True)
+# rf = RandomForestClassifier(
+#     n_estimators=160,
+#     max_depth=10,
+# )
+# rf = AdaBoostClassifier(base_estimator=rf, n_estimators=25)
 # featureSelection(dt, "DT")
 # featureSelection(rflr, "RFLR")
 # featureSelection(gbtlr, "GBTLR")
 # featureSelection(svc, "SVMRBF")
-featureSelection(rf, "RFAda")
+featureSelection(svc, "SVMLinear")
+# featureSelection(rf, "RFAda")
